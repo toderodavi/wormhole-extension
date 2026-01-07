@@ -52,7 +52,7 @@ function createMode() {
       }
     },
     onToolDragEnd(_, event) {
-      if (interation) {
+      if (interaction) {
         const [update, stop] = interaction
         const line = update((line) => {
           line.endPosition = event.pointerPosition
