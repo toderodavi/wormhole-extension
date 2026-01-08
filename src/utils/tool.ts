@@ -16,6 +16,7 @@ export function createTool() {
 
 export function createMode() {
   let firstItemId: string | null = null
+  let secondItemId: string | null = null
 
   OBR.tool.createMode({
     id: `${ID}/mode`,
@@ -29,6 +30,7 @@ export function createMode() {
       },
     ],
     async onToolClick(_, event) {
+      // Logic to link two Items
       if (!event.target || event.target.layer === 'MAP') return
 
       const itemId = event.target.id
@@ -40,19 +42,27 @@ export function createMode() {
         if (firstItemId === itemId) return
       }
 
-      let secondItemId: string | null = itemId
+      secondItemId = itemId
       OBR.notification.show('Second item selected: ' + secondItemId)
 
       await OBR.scene.items.updateItems([firstItemId, secondItemId], (items) => {
         for (const item of items) {
-          if (item.id == firstItemId) {
+          // Takes all the Items on the scene and iterates them
+          // assigning a metadata to our wormholes to save their relation
+          if (item.id === firstItemId) {
             item.metadata.wormholeLink = secondItemId
           } else {
-            item.metadata.wormholeLink = firstItemId
+            if (item.id === secondItemId) {
+              item.metadata.wormholeLink = firstItemId
+            }
           }
         }
         firstItemId = null
         secondItemId = null
+
+        // TODO
+        // what if one of the wormholes are deleted?
+        // you will have to remove the other item metadata to avoid problems
       })
     },
   })
