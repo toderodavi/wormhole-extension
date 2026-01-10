@@ -1,7 +1,7 @@
 {
   "name": "Wormhole",
-  "version": "0.0.1",
-  "manifest_version": 1,
+  "version": "0.0.2",
+  "manifest_version": 2,
   "description": "This extension is a attempt at making a solution for teleports situations in game sessions.",
   "author": "tóderodavi",
   "action": {

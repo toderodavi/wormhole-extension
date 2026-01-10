@@ -1,6 +1,5 @@
 import OBR from '@owlbear-rodeo/sdk'
-
-const ID = 'com.wormhole.tool'
+import { ID } from './utils'
 
 export function createTool() {
   OBR.tool.create({
@@ -37,6 +36,7 @@ export function createMode() {
       if (firstItemId === null) {
         firstItemId = itemId
         OBR.notification.show('First item selected: ' + itemId)
+        OBR.notification.show(`${event.target.position.x} / ${event.target.position.y}`)
         return
       } else {
         if (firstItemId === itemId) return
