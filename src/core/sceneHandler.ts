@@ -1,5 +1,5 @@
 import OBR, { type Item } from '@owlbear-rodeo/sdk'
-import { AABB, type WormholeUpdatePayload } from './utils'
+import { AABB, centroid, type WormholeUpdatePayload } from './utils'
 
 export const handleSceneChange = async (items: Item[]) => {
   const wormholes = items.filter((item) => item.metadata?.wormholeLink)
@@ -29,14 +29,28 @@ export const handleSceneChange = async (items: Item[]) => {
     }
 
     if (teleportTo) {
-      itemsToUpdate.push({
-        itemId: item.id,
-        metadata: {
-          ...item.metadata,
-          position: teleportTo.position,
-          wasTeleportedRecently: true,
-        },
-      })
+      if (teleportTo.type === 'CURVE') {
+        itemsToUpdate.push({
+          itemId: item.id,
+          metadata: {
+            ...item.metadata,
+            // TS can't recon this property because of Owlbear available APIs.
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            position: centroid(teleportTo.points),
+            wasTeleportedRecently: true,
+          },
+        })
+      } else {
+        itemsToUpdate.push({
+          itemId: item.id,
+          metadata: {
+            ...item.metadata,
+            position: teleportTo.position,
+            wasTeleportedRecently: true,
+          },
+        })
+      }
     } else if (item.metadata.wasTeleportedRecently && !isOverlapping) {
       itemsToUpdate.push({
         itemId: item.id,

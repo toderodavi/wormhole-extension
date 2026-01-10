@@ -32,7 +32,6 @@ export function createMode() {
     async onToolClick(_, event) {
       // Logic to create a one-way wormhole
       if (!event.target || event.target.layer === 'MAP') return
-
       const itemTargeted = event.target
       if (firstItem === null) {
         firstItem = itemTargeted
