@@ -20,6 +20,23 @@ export function AABB(itemBB: BoundingBox, wormholeBB: BoundingBox) {
   return isOverlapping
 }
 
+export function centroid(points: Vector2[]) {
+  let sumX = 0
+  let sumY = 0
+
+  if (points.length > 0) {
+    for (const point of points) {
+      sumX += point.x
+      sumY += point.y
+    }
+
+    return {
+      x: sumX / points.length,
+      y: sumY / points.length,
+    }
+  }
+}
+
 // To be honest, function bellow was vibe coded. I'm not completly sure how to make
 // a functional debounce function.
 // Will be changed later to better fit the extension.
