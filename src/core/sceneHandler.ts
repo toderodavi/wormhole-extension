@@ -1,5 +1,5 @@
 import OBR, { type Item } from '@owlbear-rodeo/sdk'
-import { AABB, ID, type WormholeUpdatePayload } from './utils'
+import { AABB, type WormholeUpdatePayload } from './utils'
 
 export const handleSceneChange = async (items: Item[]) => {
   const wormholes = items.filter((item) => item.metadata?.wormholeLink)
@@ -30,7 +30,6 @@ export const handleSceneChange = async (items: Item[]) => {
 
     if (teleportTo) {
       itemsToUpdate.push({
-        extensionId: ID,
         itemId: item.id,
         metadata: {
           ...item.metadata,
@@ -40,7 +39,6 @@ export const handleSceneChange = async (items: Item[]) => {
       })
     } else if (item.metadata.wasTeleportedRecently && !isOverlapping) {
       itemsToUpdate.push({
-        extensionId: ID,
         itemId: item.id,
         metadata: {
           ...item.metadata,

@@ -1,4 +1,4 @@
-import OBR from '@owlbear-rodeo/sdk'
+import OBR, { type Item } from '@owlbear-rodeo/sdk'
 import { ID } from './utils'
 
 export function createTool() {
@@ -14,51 +14,89 @@ export function createTool() {
 }
 
 export function createMode() {
-  let firstItemId: string | null = null
-  let secondItemId: string | null = null
+  let firstItem: Item | null = null
+  let secondItem: Item | null = null
 
+  // One-way wormhole
   OBR.tool.createMode({
-    id: `${ID}/mode`,
+    id: `${ID}/one-way`,
     icons: [
       {
-        icon: '/link.svg',
-        label: 'Link',
+        icon: '/arrowRight.svg',
+        label: 'One-way',
         filter: {
           activeTools: [`${ID}/tool`],
         },
       },
     ],
     async onToolClick(_, event) {
-      // Logic to link two Items
+      // Logic to create a one-way wormhole
       if (!event.target || event.target.layer === 'MAP') return
 
-      const itemId = event.target.id
-      if (firstItemId === null) {
-        firstItemId = itemId
-        OBR.notification.show('First item selected: ' + itemId)
-        OBR.notification.show(`${event.target.position.x} / ${event.target.position.y}`)
+      const itemTargeted = event.target
+      if (firstItem === null) {
+        firstItem = itemTargeted
         return
       } else {
-        if (firstItemId === itemId) return
+        if (firstItem.id === itemTargeted.id) return
       }
 
-      secondItemId = itemId
-      OBR.notification.show('Second item selected: ' + secondItemId)
+      secondItem = itemTargeted
+      OBR.notification.show('Link made!', 'SUCCESS')
 
-      await OBR.scene.items.updateItems([firstItemId, secondItemId], (items) => {
+      await OBR.scene.items.updateItems([firstItem], (items) => {
         for (const item of items) {
-          // Takes all the Items on the scene and iterates them
+          console.log(item.id)
+          item.metadata.wormholeLink = secondItem?.id
+        }
+        firstItem = null
+        secondItem = null
+      })
+    },
+  })
+
+  // Two-way wormhole
+  OBR.tool.createMode({
+    id: `${ID}/two-way`,
+    icons: [
+      {
+        icon: '/arrowHorizontal.svg',
+        label: 'Two-way',
+        filter: {
+          activeTools: [`${ID}/tool`],
+        },
+      },
+    ],
+    async onToolClick(_, event) {
+      // Logic to create a two-way wormhole
+      if (!event.target || event.target.layer === 'MAP') return
+
+      const itemTargeted = event.target
+      if (firstItem === null) {
+        firstItem = itemTargeted
+        return
+      } else {
+        if (firstItem.id === itemTargeted.id) return
+      }
+
+      secondItem = itemTargeted
+      OBR.notification.show('Link made!', 'SUCCESS')
+
+      await OBR.scene.items.updateItems([firstItem, secondItem], (items) => {
+        for (const item of items) {
+          console.log(item.id)
+          // Takes the two Items asked in the filter and iterates them
           // assigning a metadata to our wormholes to save their relation
-          if (item.id === firstItemId) {
-            item.metadata.wormholeLink = secondItemId
+          if (item.id === firstItem?.id) {
+            item.metadata.wormholeLink = secondItem?.id
           } else {
-            if (item.id === secondItemId) {
-              item.metadata.wormholeLink = firstItemId
+            if (item.id === secondItem?.id) {
+              item.metadata.wormholeLink = firstItem?.id
             }
           }
         }
-        firstItemId = null
-        secondItemId = null
+        firstItem = null
+        secondItem = null
 
         // TODO
         // what if one of the wormholes are deleted?
