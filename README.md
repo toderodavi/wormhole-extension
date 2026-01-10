@@ -1,12 +1,10 @@
-# TODO
+How to install:
 
-I will be separating the tasks on Modes and Actions
+git clone [repository link]
+npm i install
+npm run dev
 
-# Modes
+Then, open Owlbear, register an account and create a personal table.
 
-_CORE MECHANIC_
-Make the teleportation possible
-
-# Actions
-
-See all the links
+On the table, you can add custom extensions that run by your localhost port, so
+add the according port openned in the [npm run dev] and the extension should be working!

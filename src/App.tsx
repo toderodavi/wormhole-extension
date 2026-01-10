@@ -1,8 +1,9 @@
 import './App.css'
 import OBR from '@owlbear-rodeo/sdk'
-import { createAction, createMode, createTool } from './utils/tool'
+import { createAction, createMode, createTool } from './core/tool'
 import { useEffect } from 'react'
-import { debounce, handleSceneChange } from './utils/utils'
+import { handleSceneChange } from './core/sceneHandler'
+import { debounce } from './core/utils'
 
 export default function App() {
   useEffect(() => {
@@ -11,7 +12,7 @@ export default function App() {
       createMode()
       createAction()
 
-      const debouncedHandler = debounce(handleSceneChange, 200)
+      const debouncedHandler = debounce(handleSceneChange, 100)
       OBR.scene.items.onChange((items) => debouncedHandler(items))
     })
   }, [])
