@@ -1,5 +1,5 @@
-import OBR, { type Item } from '@owlbear-rodeo/sdk'
-import { ID } from './utils'
+import OBR, { buildLine, buildShape, type Item } from '@owlbear-rodeo/sdk'
+import { centroid, ID } from './utils'
 
 export function createTool() {
   OBR.tool.create({
@@ -110,12 +110,66 @@ export function createAction() {
     id: `${ID}/action`,
     icons: [
       {
-        icon: '/eye.svg',
+        icon: '/closedEye.svg',
         label: 'Show',
         filter: {
           activeTools: [`${ID}/tool`],
         },
       },
     ],
+    async onClick() {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const wormholes = await OBR.scene.items.getItems((item) => item.metadata?.wormholeLink)
+      const items: Item[] = []
+
+      for (const wormhole of wormholes) {
+        const wormholeBB = await OBR.scene.items.getItemBounds([wormhole.id])
+        const otherSideBB = await OBR.scene.items.getItemBounds([wormhole.metadata.wormholeLink as string])
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        items.push(buildLine().startPosition(wormholeBB.center).endPosition(otherSideBB.center).build())
+        if (wormhole.type !== 'CURVE') {
+          items.push(
+            buildShape()
+              .shapeType('RECTANGLE')
+              .width(wormholeBB.width)
+              .height(wormholeBB.height)
+              .style({
+                fillColor: 'rgba(255,0,100,.3)',
+                fillOpacity: 0.7,
+                strokeColor: 'black',
+                strokeOpacity: 0.5,
+                strokeWidth: 1,
+                strokeDash: [1],
+              })
+              .position(wormhole.position)
+              .build()
+          )
+        } else {
+          items.push(
+            buildShape()
+              .shapeType('RECTANGLE')
+              .width(wormholeBB.width)
+              .height(wormholeBB.height)
+              .style({
+                fillColor: 'rgba(255,0,100,.3)',
+                fillOpacity: 0.7,
+                strokeColor: 'black',
+                strokeOpacity: 0.5,
+                strokeWidth: 1,
+                strokeDash: [1],
+              })
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              .position(centroid(wormhole.points))
+              .build()
+          )
+        }
+      }
+      console.log(items)
+      console.log(await OBR.scene.local.addItems(items))
+    },
   })
 }
